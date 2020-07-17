@@ -1,16 +1,23 @@
 from oauth2client.service_account import ServiceAccountCredentials
 from pyppeteer.errors import ElementHandleError, TimeoutError
 from googleapiclient import discovery
+from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from datetime import datetime
 from pyppeteer import launch
 import requests
 import httplib2
 import asyncio
+import sys
+import os
 import re
 
-CREDENTIALS_FILE = ''  # api-токены
-SPREADSHEET_ID = ''  # id google-таблицы
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path): load_dotenv(dotenv_path)
+else: sys.exit('Отсутствует файл с переменными окружения. Парсинг невозможен.')
+
+CREDENTIALS_FILE = os.getenv('TOKENS')  # api-токены
+SPREADSHEET_ID = os.getenv('ID')  # id google-таблицы
 
 creditentials = ServiceAccountCredentials.from_json_keyfile_name(
                     CREDENTIALS_FILE,
@@ -35,8 +42,7 @@ def get_from_table(id=SPREADSHEET_ID,
         range='Лист1!D3:D112',
         majorDimension='COLUMNS'
     ).execute()['values'][0]
-    for i in ya_values:
-        ya_links.append(i)
+    for i in ya_values: ya_links.append(i)
 
     ggl_values = service.spreadsheets().values().get(
         spreadsheetId=id,
@@ -44,8 +50,7 @@ def get_from_table(id=SPREADSHEET_ID,
         majorDimension='COLUMNS'
     ).execute()['values'][0]
     ggl_links.clear()
-    for i in ggl_values:
-        ggl_links.append(i)
+    for i in ggl_values: ggl_links.append(i)
 
     gis_values = service.spreadsheets().values().get(
         spreadsheetId=id,
@@ -53,8 +58,7 @@ def get_from_table(id=SPREADSHEET_ID,
         majorDimension='COLUMNS'
     ).execute()['values'][0]
     gis_links.clear()
-    for i in gis_values:
-        gis_links.append(i)
+    for i in gis_values: gis_links.append(i)
 
 
 def yandex_parser():
@@ -76,10 +80,9 @@ def yandex_parser():
             if (count and rating) is not None and not count.text[0].isalpha():
                 rewiew = (re.findall(r'\d+', count.text)[0], rating.text.replace('.', ','))
                 ya_rewiews.append(rewiew)
-            else:
-                ya_rewiews.append(('0', '0'))
-        else:
-            ya_rewiews.append(('-', '-'))
+                print(rewiew, link)
+            else: ya_rewiews.append(('0', '0'))
+        else: ya_rewiews.append(('-', '-'))
 
 
 async def google_parser():
@@ -111,9 +114,9 @@ async def google_parser():
 
             review = (rating_count[1:-1], rating)
             ggl_rewiews.append(review)
+            print(review, link)
             await browser.close()
-        else:
-            ggl_rewiews.append(('-', '-'))
+        else: ggl_rewiews.append(('-', '-'))
     await browser.close()
 
 
@@ -146,9 +149,9 @@ async def gis_parser():
 
             review = (rating_count, str(float(rating)).replace('.', ','))
             gis_rewiews.append(review)
+            print(review, link)
             await browser.close()
-        else:
-            gis_rewiews.append(('-', '-'))
+        else: gis_rewiews.append(('-', '-'))
     await browser.close()
 
 
@@ -201,20 +204,20 @@ def add_to_table(id=SPREADSHEET_ID,
 
 async def run_parser():
     """ Функция для выполнения парсинга в event loop"""
-    print('Начало парсинга.', datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
+    print(f'[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Начало парсинга.')
     get_from_table()
-    print('Все ссылки взяты из таблицы.', datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
-          '\nВыполняется парсинг яндекс.карт.', datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
+    print(f'[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Все ссылки взяты из таблицы.'
+          f'\n[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Выполняется парсинг яндекс.карт.')
     yandex_parser()
-    print('Парсинг яндекс.карт выполнен.', datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
-          '\nВыполняется парсинг гугл.карт.', datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
+    print(f'[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Парсинг яндекс.карт выполнен.'
+          f'\n[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Выполняется парсинг гугл.карт.')
     await google_parser()
-    print('Парсинг гугл.карт выполнен.', datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
-          '\nВыполняется парсинг 2gis.', datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
+    print(f'[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Парсинг гугл.карт выполнен.'
+          f'\n[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Выполняется парсинг 2gis.')
     await gis_parser()
-    print('Парсинг 2gis выполнен.', datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
+    print(f'[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Парсинг 2gis выполнен.')
     add_to_table()
-    print('Все данные занесены в таблицу, парсинг успешно завершён.', datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
+    print(f'[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Все данные занесены в таблицу, парсинг успешно завершён.')
 
 
 if __name__ == '__main__':
