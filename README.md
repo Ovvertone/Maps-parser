@@ -1,2 +1,2 @@
 # Maps-parser
-## Parser for yandex.maps, google.maps and 2gis.
+## Parser for Yandex.maps, Google maps and 2gis with API of Google docs.
