@@ -80,7 +80,6 @@ def yandex_parser():
             if (count and rating) is not None and not count.text[0].isalpha():
                 rewiew = (re.findall(r'\d+', count.text)[0], rating.text.replace('.', ','))
                 ya_rewiews.append(rewiew)
-                print(rewiew, link)
             else: ya_rewiews.append(('0', '0'))
         else: ya_rewiews.append(('-', '-'))
 
@@ -114,7 +113,6 @@ async def google_parser():
 
             review = (rating_count[1:-1], rating)
             ggl_rewiews.append(review)
-            print(review, link)
             await browser.close()
         else: ggl_rewiews.append(('-', '-'))
     await browser.close()
@@ -149,7 +147,6 @@ async def gis_parser():
 
             review = (rating_count, str(float(rating)).replace('.', ','))
             gis_rewiews.append(review)
-            print(review, link)
             await browser.close()
         else: gis_rewiews.append(('-', '-'))
     await browser.close()
