@@ -49,7 +49,6 @@ def get_from_table(id=SPREADSHEET_ID,
         range='Лист1!G3:G112',
         majorDimension='COLUMNS'
     ).execute()['values'][0]
-    ggl_links.clear()
     for i in ggl_values: ggl_links.append(i)
 
     gis_values = service.spreadsheets().values().get(
@@ -57,7 +56,6 @@ def get_from_table(id=SPREADSHEET_ID,
         range='Лист1!J3:J112',
         majorDimension='COLUMNS'
     ).execute()['values'][0]
-    gis_links.clear()
     for i in gis_values: gis_links.append(i)
 
 
@@ -68,7 +66,6 @@ def yandex_parser():
     Помещает кортеж из этой пары в список ya_rewiews.
     Если ссылка некорректна, то в список ya_rewiews возвращается пара ('-', '-').
     '''
-    ya_rewiews.clear()
     for link in ya_links:
         if link.find('http') != -1:
             page = requests.get(link)
@@ -93,7 +90,6 @@ async def google_parser():
     В конце каждой итерации закрывает headless-браузер.
     Если ссылка некорректна, то в список ggl_rewiews возвращается пара ('-', '-').
     '''
-    ggl_rewiews.clear()
     for link in ggl_links:
         if link.find('http') != -1:
             browser = await launch()
@@ -127,7 +123,6 @@ async def gis_parser():
     В конце каждой итерации закрывает headless-браузер.
     Если ссылка некорректна, то в список gis_rewiews возвращается пара ('-', '-').
     '''
-    gis_rewiews.clear()
     for link in gis_links:
         if link.find('http') != -1:
             browser = await launch()
