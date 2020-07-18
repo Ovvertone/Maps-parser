@@ -201,20 +201,20 @@ def add_to_table(id=SPREADSHEET_ID,
 
 async def run_parser():
     """ Функция для выполнения парсинга в event loop"""
-    print(f'[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Начало парсинга.')
+    print(f'[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Начало парсинга.')
     get_from_table()
-    print(f'[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Все ссылки взяты из таблицы.'
-          f'\n[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Выполняется парсинг яндекс.карт.')
+    print(f'[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Все ссылки взяты из таблицы.'
+          f'\n[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Выполняется парсинг яндекс.карт.')
     yandex_parser()
-    print(f'[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Парсинг яндекс.карт выполнен.'
-          f'\n[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Выполняется парсинг гугл.карт.')
+    print(f'[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Парсинг яндекс.карт выполнен.'
+          f'\n[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Выполняется парсинг гугл.карт.')
     await google_parser()
-    print(f'[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Парсинг гугл.карт выполнен.'
-          f'\n[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Выполняется парсинг 2gis.')
+    print(f'[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Парсинг гугл.карт выполнен.'
+          f'\n[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Выполняется парсинг 2gis.')
     await gis_parser()
-    print(f'[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Парсинг 2gis выполнен.')
+    print(f'[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Парсинг 2gis выполнен.')
     add_to_table()
-    print(f'[{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}] Все данные занесены в таблицу, парсинг успешно завершён.')
+    print(f'[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Все данные занесены в таблицу, парсинг успешно завершён.')
 
 
 if __name__ == '__main__':
