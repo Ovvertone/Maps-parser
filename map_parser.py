@@ -77,10 +77,8 @@ def yandex_parser():
             if (count and rating) is not None and not count.text[0].isalpha():
                 review = (re.findall(r'\d+', count.text)[0], rating.text.replace('.', ','))
                 ya_reviews.append(review)
-                print(review)
             else:
                 ya_reviews.append(('0', '0'))
-                print(ya_reviews[-1])
         else: ya_reviews.append(('-', '-'))
 
 
@@ -112,7 +110,6 @@ async def google_parser():
 
             review = (rating_count[1:-1], rating)
             ggl_reviews.append(review)
-            print(review)
             await browser.close()
         else: ggl_reviews.append(('-', '-'))
     await browser.close()
@@ -146,11 +143,9 @@ async def gis_parser():
 
             review = (rating_count, str(float(rating)).replace('.', ','))
             gis_reviews.append(review)
-            print(review)
             await browser.close()
         else:
             gis_reviews.append(('-', '-'))
-            print(gis_reviews[-1])
     await browser.close()
 
 
@@ -172,7 +167,7 @@ def add_to_table(id=SPREADSHEET_ID,
                 {"range": "Лист1!E3:F112",
                  "majorDimension": "ROWS",
                  "values": [ya_data[i] for i in range(len(ya_data))]},
-        ]
+            ]
         }
     ).execute()
 
