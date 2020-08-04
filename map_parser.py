@@ -26,9 +26,9 @@ creditentials = ServiceAccountCredentials.from_json_keyfile_name(
 httpAuth = creditentials.authorize(httplib2.Http())  # аутентификация в документе
 service = discovery.build('sheets', 'v4', http=httpAuth)  # экземпляр api
 
-ya_links, ya_rewiews = [], []  # список ссылок и список полученных данных для яндекс.карт
-ggl_links, ggl_rewiews = [], []  # список ссылок и список полученных данных для google.maps
-gis_links, gis_rewiews = [], []  # список ссылок и список полученных данных для 2gis
+ya_links, ya_reviews = [], []  # список ссылок и список полученных данных для яндекс.карт
+ggl_links, ggl_reviews = [], []  # список ссылок и список полученных данных для google.maps
+gis_links, gis_reviews = [], []  # список ссылок и список полученных данных для 2gis
 
 
 def get_from_table(id=SPREADSHEET_ID,
@@ -75,10 +75,13 @@ def yandex_parser():
             rating = soup.find('span',
                                class_='business-rating-badge-view__rating-text _size_m')
             if (count and rating) is not None and not count.text[0].isalpha():
-                rewiew = (re.findall(r'\d+', count.text)[0], rating.text.replace('.', ','))
-                ya_rewiews.append(rewiew)
-            else: ya_rewiews.append(('0', '0'))
-        else: ya_rewiews.append(('-', '-'))
+                review = (re.findall(r'\d+', count.text)[0], rating.text.replace('.', ','))
+                ya_reviews.append(review)
+                print(review)
+            else:
+                ya_reviews.append(('0', '0'))
+                print(ya_reviews[-1])
+        else: ya_reviews.append(('-', '-'))
 
 
 async def google_parser():
@@ -103,14 +106,15 @@ async def google_parser():
                 rating = await page.evaluate('(element) => element.textContent',
                                              await page.querySelector('.section-star-display'))
             except (ElementHandleError, TimeoutError):
-                ggl_rewiews.append(('0', '0'))
+                ggl_reviews.append(('0', '0'))
                 await browser.close()
                 continue
 
             review = (rating_count[1:-1], rating)
-            ggl_rewiews.append(review)
+            ggl_reviews.append(review)
+            print(review)
             await browser.close()
-        else: ggl_rewiews.append(('-', '-'))
+        else: ggl_reviews.append(('-', '-'))
     await browser.close()
 
 
@@ -125,7 +129,7 @@ async def gis_parser():
     '''
     for link in gis_links:
         if link.find('http') != -1:
-            browser = await launch()
+            browser = await launch(headless=False)
             page = await browser.newPage()
 
             try:
@@ -136,21 +140,24 @@ async def gis_parser():
                 rating = await page.evaluate('(element) => element.textContent',
                                              await page.querySelector('._1n8h0vx'))
             except (ElementHandleError, TimeoutError):
-                gis_rewiews.append(('0', '0'))
+                gis_reviews.append(('0', '0'))
                 await browser.close()
                 continue
 
             review = (rating_count, str(float(rating)).replace('.', ','))
-            gis_rewiews.append(review)
+            gis_reviews.append(review)
+            print(review)
             await browser.close()
-        else: gis_rewiews.append(('-', '-'))
+        else:
+            gis_reviews.append(('-', '-'))
+            print(gis_reviews[-1])
     await browser.close()
 
 
 def add_to_table(id=SPREADSHEET_ID,
-                 ya_data=ya_rewiews,
-                 ggl_data=ggl_rewiews,
-                 gis_data=gis_rewiews,
+                 ya_data=ya_reviews,
+                 ggl_data=ggl_reviews,
+                 gis_data=gis_reviews,
                  service=service):
     '''
     Функция для добавления количества отзывов и среднего рейтинга в google-таблицу.
