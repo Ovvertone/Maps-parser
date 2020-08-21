@@ -200,10 +200,10 @@ async def run_parser():
     get_from_table()
     print(f'[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Все ссылки взяты из таблицы.'
           f'\n[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Выполняется парсинг яндекс.карт.')
-    #yandex_parser()
+    yandex_parser()
     print(f'[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Парсинг яндекс.карт выполнен.'
           f'\n[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Выполняется парсинг гугл.карт.')
-    #await google_parser()
+    await google_parser()
     print(f'[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Парсинг гугл.карт выполнен.'
           f'\n[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Выполняется парсинг 2gis.')
     await gis_parser()
