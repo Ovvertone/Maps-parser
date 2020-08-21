@@ -125,7 +125,7 @@ async def gis_parser():
     '''
     for link in gis_links:
         if link.find('http') != -1:
-            browser = await launch()
+            browser = await launch(headless=False)
             page = await browser.newPage()
 
             try:
@@ -134,7 +134,7 @@ async def gis_parser():
                 rating_count = await page.evaluate('(element) => element.textContent',
                                                    await page.querySelector('._gg5kmr'))
                 rating = await page.evaluate('(element) => element.textContent',
-                                             await page.querySelector('._36rspy'))
+                                             await page.querySelector('._1n8h0vx'))
             except (ElementHandleError, TimeoutError, NetworkError):
                 gis_reviews.append(('0', '0'))
                 await browser.close()
@@ -200,10 +200,10 @@ async def run_parser():
     get_from_table()
     print(f'[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Все ссылки взяты из таблицы.'
           f'\n[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Выполняется парсинг яндекс.карт.')
-    yandex_parser()
+    #yandex_parser()
     print(f'[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Парсинг яндекс.карт выполнен.'
           f'\n[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Выполняется парсинг гугл.карт.')
-    await google_parser()
+    #await google_parser()
     print(f'[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Парсинг гугл.карт выполнен.'
           f'\n[{datetime.now().strftime("%d.%m.%Y %H:%M:%S")}] Выполняется парсинг 2gis.')
     await gis_parser()
