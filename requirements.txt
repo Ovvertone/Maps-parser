@@ -38,6 +38,6 @@ six==1.15.0
 soupsieve==2.0.1
 tqdm==4.47.0
 uritemplate==3.0.1
-urllib3==1.25.9
+urllib3==1.26.5
 websockets==8.1
 yarl==1.4.2
